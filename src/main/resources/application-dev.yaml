@@ -1,0 +1,38 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security.oauth2.server.resource: TRACE
+    com.mattelogic.inchfab: INFO
+
+okta:
+  oauth2:
+    issuer: ${AUTH0_ISSUER}
+    audience: ${AUTH0_AUDIENCE}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_DB_HOST}:${POSTGRES_DB_PORT}/${POSTGRES_DB_NAME}
+    username: ${POSTGRES_DB_USER}
+    password: ${POSTGRES_DB_PASS}
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@${MONGO_DB_HOST}:${MONGO_DB_PORT}/${MONGO_DB_NAME}?authSource=admin&authMechanism=SCRAM-SHA-256
+
+security:
+  cors:
+    origins:
+      - https://inchfab-ui-dev.thedecoder.net
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+
+box:
+  client-id: ${BOX_CLIENT_ID}
+  client-secret: ${BOX_CLIENT_SECRET}
+  enterprise-id: ${BOX_ENTERPRISE_ID}
+  folder-id: ${BOX_FOLDER_ID}

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ${PROJECT_NAME:InchFab}
+  profiles:
+    active: ${ACTIVE_PROFILE:local}
