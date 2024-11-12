@@ -1,0 +1,137 @@
+services:
+  db:
+    image: postgres:16.4-alpine
+    container_name: ${PROJECT_NAME:-inchfab}-db-${ENVIRONMENT}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASS}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d  # For initialization scripts
+    restart: unless-stopped  # Better than 'always' for managed environments
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_DB_USER} -d ${POSTGRES_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - inchfab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mongodb:
+    image: mongo:7.0.15-jammy
+    container_name: ${PROJECT_NAME:-inchfab}-mongodb-${ENVIRONMENT}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASS}
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+      - ./init-scripts/mongodb:/docker-entrypoint-initdb.d  # For initialization scripts
+    restart: unless-stopped
+    command: ["--auth", "--bind_ip_all"]  # Enable authentication and remote access
+    healthcheck:
+      test: mongosh --eval 'db.runCommand("ping").ok' --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - inchfab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    container_name: ${PROJECT_NAME:-inchfab}-api-${ENVIRONMENT}
+    image: ${DOCKER_USERNAME}/inchfab-api:${APP_VERSION:-latest}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      TZ: Asia/Singapore
+      PROJECT_NAME: ${PROJECT_NAME:-InchFab}
+      ACTIVE_PROFILE: ${ENVIRONMENT}
+      
+      # PostgreSQL Configuration
+      POSTGRES_DB_URI: jdbc:postgresql://db:5432/${POSTGRES_DB_NAME}
+      POSTGRES_DB_USER: ${POSTGRES_DB_USER}
+      POSTGRES_DB_PASS: ${POSTGRES_DB_PASS}
+      
+      # MongoDB Configuration
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_DB_USER}:${MONGO_DB_PASS}@mongodb:27017/${MONGO_DB_NAME}?authSource=admin
+      
+      # Auth0 Configuration
+      AUTH0_ISSUER: ${AUTH0_ISSUER}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      
+      # Box Configuration
+      BOX_CLIENT_ID: ${BOX_CLIENT_ID}
+      BOX_CLIENT_SECRET: ${BOX_CLIENT_SECRET}
+      BOX_ENTERPRISE_ID: ${BOX_ENTERPRISE_ID}
+      BOX_FOLDER_ID: ${BOX_FOLDER_ID}
+      
+      # JVM Configuration
+      JAVA_OPTS: >
+        -XX:+UseG1GC
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=/var/log/dump.hprof
+        -Xms512m
+        -Xmx1g
+        -Dfile.encoding=UTF-8
+    volumes:
+      - ./logs:/var/log  # Mount logs directory
+    networks:
+      - inchfab-network
+    depends_on:
+      db:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+    pull_policy: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  inchfab-network:
+    driver: bridge
+    name: ${PROJECT_NAME:-inchfab}-network-${ENVIRONMENT}
+
+volumes:
+  pg_data:
+    name: ${PROJECT_NAME:-inchfab}-postgres-${ENVIRONMENT}
+  mongo_data:
+    name: ${PROJECT_NAME:-inchfab}-mongodb-${ENVIRONMENT}
+  mongo_config:
+    name: ${PROJECT_NAME:-inchfab}-mongodb-config-${ENVIRONMENT}

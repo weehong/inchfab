@@ -1,0 +1,25 @@
+spring:
+  flyway:
+    enabled: false
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE  # H2 in-memory DB
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # Automatically create and drop the schema
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      platform: h2
+
+okta:
+  oauth2:
+    issuer: https://dev-5gbta35lfi665ihm.us.auth0.com/
+    audience: https://test.inchfab.com/api/v1
+
+

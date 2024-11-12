@@ -1,0 +1,32 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security.oauth2.server.resource: TRACE
+    com.mattelogic.inchfab: INFO
+
+okta:
+  oauth2:
+    issuer: ${AUTH0_ISSUER}
+    audience: ${AUTH0_AUDIENCE}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_DB_URI}
+    username: ${POSTGRES_DB_USER}
+    password: ${POSTGRES_DB_PASS}
+  data:
+    mongodb:
+      uri: ${POSTGRES_DB_URI}
+
+security:
+  cors:
+    origins:
+      - http://localhost:5173
+    methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
