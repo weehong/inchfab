@@ -34,6 +34,9 @@ public record ProjectRequestDto(
     @NotBlank(message = "Name is required")
     String name,
 
+    String rootFolderId,
+    String projectFolderId,
+    String uploadFile,
     String substrateType,
     Integer waferSize,
     BigDecimal totalTime,

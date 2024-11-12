@@ -95,6 +95,10 @@ public class ProjectMapper {
   private void updateProjectFields(Project project, ProjectRequestDto request) {
     Optional.ofNullable(request.submitterId()).ifPresent(project::setSubmitterId);
     Optional.ofNullable(request.submitterName()).ifPresent(project::setSubmitterName);
+    Optional.ofNullable(request.rootFolderId()).ifPresent(project::setRootFolderId);
+    Optional.ofNullable(request.projectFolderId()).ifPresent(project::setProjectFolderId);
+    Optional.ofNullable(request.uploadFile()).ifPresent(project::setUploadFile);
+    Optional.ofNullable(request.waferSize()).ifPresent(project::setWaferSize);
     Optional.ofNullable(request.substrateType()).ifPresent(project::setSubstrateType);
     Optional.ofNullable(request.totalTime()).ifPresent(project::setTotalTime);
     Optional.ofNullable(request.totalLaborCost()).ifPresent(project::setTotalLaborCost);

@@ -229,8 +229,7 @@ public class ProjectServiceImpl implements GenericService<ProjectResponseDto, Pr
               .put("externalCost", nullToZero(unitCost.externalCost()))
               .put("manualCost", nullToZero(unitCost.manualCost()))
               .put("substrateCost", nullToZero(unitCost.substrateCost()))
-              .put("totalTime", nullToZero(unitCost.totalTime()))
-              .put("totalCost", nullToZero(unitCost.totalCost()));
+              .put("totalTime", nullToZero(unitCost.totalTime()));
 
           updatedStep.set("costDetails", costDetails);
         }
