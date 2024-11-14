@@ -2,8 +2,8 @@ package com.mattelogic.inchfab.core.controller;
 
 import com.mattelogic.inchfab.common.dto.ApiResponseDto;
 import com.mattelogic.inchfab.core.dtos.request.CostRequestDto;
-import com.mattelogic.inchfab.core.service.ProcessCostCalculatorServiceImpl;
 import com.mattelogic.inchfab.core.dtos.response.ResultResponseDto;
+import com.mattelogic.inchfab.core.service.ProcessCostCalculatorServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/process-calculator")
-public class ProcessCalculatorController {
+@RequestMapping("/api/v1/cost-calculator")
+public class CostCalculatorController {
 
   private final ProcessCostCalculatorServiceImpl service;
 
