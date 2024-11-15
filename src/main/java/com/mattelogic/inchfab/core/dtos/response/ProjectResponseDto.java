@@ -1,7 +1,6 @@
 package com.mattelogic.inchfab.core.dtos.response;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record ProjectResponseDto(
@@ -17,19 +16,21 @@ public record ProjectResponseDto(
     String projectFolderId,
     String uploadFiles,
     String substrateType,
-    BigDecimal totalLaborCost,
-    BigDecimal totalPeriodicCost,
-    BigDecimal totalTime,
-    BigDecimal totalTimeCost,
-    BigDecimal totalPowerCost,
-    BigDecimal totalGasCost,
-    BigDecimal totalTargetMaterialCost,
-    BigDecimal totalWetEtchantCost,
-    BigDecimal totalLithographyReagentCost,
-    BigDecimal totalMetrologyInspectionCost,
-    BigDecimal totalExternalProcessCost,
-    BigDecimal totalManuallyInputProcessCost,
-    BigDecimal totalSubstrateCost,
+    Double laborCost,
+    Double electricalCost,
+    Double totalLaborCost,
+    Double totalPeriodicCost,
+    Double totalTime,
+    Double totalTimeCost,
+    Double totalPowerCost,
+    Double totalGasCost,
+    Double totalTargetMaterialCost,
+    Double totalWetEtchantCost,
+    Double totalLithographyReagentCost,
+    Double totalMetrologyInspectionCost,
+    Double totalExternalProcessCost,
+    Double totalManuallyInputProcessCost,
+    Double totalSubstrateCost,
     Boolean status,
     JsonNode projectStep,
     LocalDateTime createdAt,

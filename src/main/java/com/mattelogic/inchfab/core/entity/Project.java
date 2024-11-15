@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -48,21 +47,21 @@ public class Project {
   private String name;
   private Integer waferSize;
   private String substrateType;
-  private BigDecimal laborCost;
-  private BigDecimal electricalCost;
-  private BigDecimal totalTime;
-  private BigDecimal totalTimeCost;
-  private BigDecimal totalLaborCost;
-  private BigDecimal totalPeriodicCost;
-  private BigDecimal totalPowerCost;
-  private BigDecimal totalGasCost;
-  private BigDecimal totalTargetMaterialCost;
-  private BigDecimal totalWetEtchantCost;
-  private BigDecimal totalLithographyReagentCost;
-  private BigDecimal totalMetrologyInspectionCost;
-  private BigDecimal totalExternalProcessCost;
-  private BigDecimal totalManuallyInputProcessCost;
-  private BigDecimal totalSubstrateCost;
+  private Double laborCost;
+  private Double electricalCost;
+  private Double totalTime;
+  private Double totalTimeCost;
+  private Double totalLaborCost;
+  private Double totalPeriodicCost;
+  private Double totalPowerCost;
+  private Double totalGasCost;
+  private Double totalTargetMaterialCost;
+  private Double totalWetEtchantCost;
+  private Double totalLithographyReagentCost;
+  private Double totalMetrologyInspectionCost;
+  private Double totalExternalProcessCost;
+  private Double totalManuallyInputProcessCost;
+  private Double totalSubstrateCost;
   @Type(JsonBinaryType.class)
   @Column(columnDefinition = "json")
   private JsonNode projectStep;
@@ -79,7 +78,9 @@ public class Project {
       String name,
       String requesterId,
       String requesterName,
-      Integer waferSize
+      Integer waferSize,
+      Double laborCost,
+      Double electricalCost
   ) {
     Project project = new Project();
     project.setCompany(company);
@@ -88,21 +89,21 @@ public class Project {
     project.setName(name);
     project.setWaferSize(waferSize);
     project.setStatus(true);
-    project.setLaborCost(BigDecimal.ZERO);
-    project.setElectricalCost(BigDecimal.ZERO);
-    project.setTotalTime(BigDecimal.ZERO);
-    project.setTotalTimeCost(BigDecimal.ZERO);
-    project.setTotalLaborCost(BigDecimal.ZERO);
-    project.setTotalPeriodicCost(BigDecimal.ZERO);
-    project.setTotalPowerCost(BigDecimal.ZERO);
-    project.setTotalGasCost(BigDecimal.ZERO);
-    project.setTotalTargetMaterialCost(BigDecimal.ZERO);
-    project.setTotalWetEtchantCost(BigDecimal.ZERO);
-    project.setTotalLithographyReagentCost(BigDecimal.ZERO);
-    project.setTotalMetrologyInspectionCost(BigDecimal.ZERO);
-    project.setTotalExternalProcessCost(BigDecimal.ZERO);
-    project.setTotalManuallyInputProcessCost(BigDecimal.ZERO);
-    project.setTotalSubstrateCost(BigDecimal.ZERO);
+    project.setLaborCost(laborCost);
+    project.setElectricalCost(electricalCost);
+    project.setTotalTime(0.0);
+    project.setTotalTimeCost(0.0);
+    project.setTotalLaborCost(0.0);
+    project.setTotalPeriodicCost(0.0);
+    project.setTotalPowerCost(0.0);
+    project.setTotalGasCost(0.0);
+    project.setTotalTargetMaterialCost(0.0);
+    project.setTotalWetEtchantCost(0.0);
+    project.setTotalLithographyReagentCost(0.0);
+    project.setTotalMetrologyInspectionCost(0.0);
+    project.setTotalExternalProcessCost(0.0);
+    project.setTotalManuallyInputProcessCost(0.0);
+    project.setTotalSubstrateCost(0.0);
     project.setCreatedAt(null);
     project.setUpdatedAt(null);
     return project;
@@ -150,7 +151,6 @@ public class Project {
   }
 
   private static String generateCopyName(String originalName, List<Project> existingProjects) {
-    // Pattern to extract base name and copy number from original name
     Pattern copyPattern = Pattern.compile("^(.+?)(?:\\s+-\\s+Copy\\s+(\\d+))*$");
     Matcher matcher = copyPattern.matcher(originalName);
 
@@ -164,12 +164,11 @@ public class Project {
         .map(Project::getName)
         .filter(name -> name.startsWith(baseName))
         .map(name -> {
-          // Pattern to extract copy number from existing project names
           Pattern numberPattern = Pattern.compile(
               Pattern.quote(baseName) + "\\s+-\\s+Copy\\s+(\\d+)$");
           Matcher m = numberPattern.matcher(name);
           if (!m.matches()) {
-            return 0;  // Not a copy
+            return 0;
           }
           return Integer.parseInt(m.group(1));
         })
@@ -183,7 +182,7 @@ public class Project {
     this.projectStep = null;
   }
 
-  public BigDecimal calculateTotalCost() {
+  public Double calculateTotalCost() {
     return Stream.of(
             totalLaborCost,
             totalPeriodicCost,
@@ -198,6 +197,6 @@ public class Project {
             totalSubstrateCost
         )
         .filter(Objects::nonNull)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .reduce(0.0, Double::sum);
   }
 }

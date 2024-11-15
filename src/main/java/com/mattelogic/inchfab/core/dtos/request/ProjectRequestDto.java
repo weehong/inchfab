@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.List;
 
 public record ProjectRequestDto(
@@ -39,18 +38,18 @@ public record ProjectRequestDto(
     String uploadFile,
     String substrateType,
     Integer waferSize,
-    BigDecimal totalTime,
-    BigDecimal totalLaborCost,
-    BigDecimal totalPeriodicCost,
-    BigDecimal totalPowerCost,
-    BigDecimal totalGasCost,
-    BigDecimal totalTargetMaterialCost,
-    BigDecimal totalWetEtchantCost,
-    BigDecimal totalLithographyReagentCost,
-    BigDecimal totalMetrologyInspectionCost,
-    BigDecimal totalExternalProcessCost,
-    BigDecimal totalManuallyInputProcessCost,
-    BigDecimal totalSubstrateCost,
+    Double totalTime,
+    Double totalLaborCost,
+    Double totalPeriodicCost,
+    Double totalPowerCost,
+    Double totalGasCost,
+    Double totalTargetMaterialCost,
+    Double totalWetEtchantCost,
+    Double totalLithographyReagentCost,
+    Double totalMetrologyInspectionCost,
+    Double totalExternalProcessCost,
+    Double totalManuallyInputProcessCost,
+    Double totalSubstrateCost,
     Boolean status,
     JsonNode projectStep
 ) {

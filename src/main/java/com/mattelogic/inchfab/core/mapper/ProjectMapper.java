@@ -7,7 +7,6 @@ import com.mattelogic.inchfab.core.entity.Company;
 import com.mattelogic.inchfab.core.entity.Project;
 import com.mattelogic.inchfab.core.exception.CompanyNotFoundException;
 import com.mattelogic.inchfab.core.repository.CompanyRepository;
-import java.math.BigDecimal;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,11 @@ public class ProjectMapper {
 
   private final CompanyRepository companyRepository;
 
-  public Project toEntity(ProjectRequestDto request) {
+  public Project toEntity(
+      ProjectRequestDto request,
+      Double laborCost,
+      Double electricalCost
+  ) {
     Company company = companyRepository.findById(request.companyId())
         .orElseThrow(() -> new CompanyNotFoundException(request.companyId()));
 
@@ -27,7 +30,9 @@ public class ProjectMapper {
         request.name(),
         request.requesterId(),
         request.requesterName(),
-        request.waferSize()
+        request.waferSize(),
+        laborCost,
+        electricalCost
     );
 
     updateProjectFields(project, request);
@@ -36,23 +41,19 @@ public class ProjectMapper {
 
   public void updateProjectWithCalculationResult(Project project, ResultResponseDto result) {
     Optional.ofNullable(result).ifPresent(r -> {
-      project.setTotalTime(toBigDecimal(r.totalTime()));
-      project.setTotalLaborCost(toBigDecimal(r.laborTime()));
-      project.setTotalPeriodicCost(toBigDecimal(r.periodicCost()));
-      project.setTotalPowerCost(toBigDecimal(r.power()));
-      project.setTotalGasCost(toBigDecimal(r.gas()));
-      project.setTotalTargetMaterialCost(toBigDecimal(r.targetMaterial()));
-      project.setTotalWetEtchantCost(toBigDecimal(r.wetEtchant()));
-      project.setTotalLithographyReagentCost(toBigDecimal(r.lithographyReagent()));
-      project.setTotalMetrologyInspectionCost(toBigDecimal(r.metrologyInspectionCost()));
-      project.setTotalExternalProcessCost(toBigDecimal(r.externalCost()));
-      project.setTotalManuallyInputProcessCost(toBigDecimal(r.manualCost()));
-      project.setTotalSubstrateCost(toBigDecimal(r.substrateCost()));
+      project.setTotalTime(r.totalTime());
+      project.setTotalLaborCost(r.laborTime());
+      project.setTotalPeriodicCost(r.periodicCost());
+      project.setTotalPowerCost(r.power());
+      project.setTotalGasCost(r.gas());
+      project.setTotalTargetMaterialCost(r.targetMaterial());
+      project.setTotalWetEtchantCost(r.wetEtchant());
+      project.setTotalLithographyReagentCost(r.lithographyReagent());
+      project.setTotalMetrologyInspectionCost(r.metrologyInspectionCost());
+      project.setTotalExternalProcessCost(r.externalCost());
+      project.setTotalManuallyInputProcessCost(r.manualCost());
+      project.setTotalSubstrateCost(r.substrateCost());
     });
-  }
-
-  private BigDecimal toBigDecimal(Double value) {
-    return value != null ? BigDecimal.valueOf(value) : BigDecimal.ZERO;
   }
 
   public ProjectResponseDto toResponseDto(Project project) {
@@ -70,6 +71,8 @@ public class ProjectMapper {
             p.getProjectFolderId(),
             p.getUploadFile(),
             p.getSubstrateType(),
+            p.getLaborCost(),
+            p.getElectricalCost(),
             p.getTotalLaborCost(),
             p.getTotalTime(),
             p.getTotalPeriodicCost(),
@@ -91,7 +94,9 @@ public class ProjectMapper {
         .orElseThrow(() -> new IllegalArgumentException("Project cannot be null"));
   }
 
-  private void updateProjectFields(Project project, ProjectRequestDto request) {
+  private void updateProjectFields(
+      Project project,
+      ProjectRequestDto request) {
     Optional.ofNullable(request.submitterId()).ifPresent(project::setSubmitterId);
     Optional.ofNullable(request.submitterName()).ifPresent(project::setSubmitterName);
     Optional.ofNullable(request.rootFolderId()).ifPresent(project::setRootFolderId);

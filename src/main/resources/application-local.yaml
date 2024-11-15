@@ -30,3 +30,9 @@ security:
       - PUT
       - DELETE
       - OPTIONS
+
+box:
+  client-id: ${BOX_CLIENT_ID}
+  client-secret: ${BOX_CLIENT_SECRET}
+  enterprise-id: ${BOX_ENTERPRISE_ID}
+  folder-id: ${BOX_FOLDER_ID}

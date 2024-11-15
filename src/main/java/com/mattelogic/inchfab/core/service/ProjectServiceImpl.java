@@ -17,6 +17,7 @@ import com.mattelogic.inchfab.core.exception.ProjectStepConversionException;
 import com.mattelogic.inchfab.core.mapper.ProjectMapper;
 import com.mattelogic.inchfab.core.model.ProjectStep;
 import com.mattelogic.inchfab.core.repository.ProjectRepository;
+import com.mattelogic.inchfab.domain.repository.EssentialRepository;
 import jakarta.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -37,13 +38,18 @@ public class ProjectServiceImpl implements GenericService<ProjectResponseDto, Pr
   private final ProjectMapper projectMapper;
   private final ObjectMapper objectMapper;
   private final ProcessCostCalculatorServiceImpl processCostCalculatorService;
+  private final EssentialRepository essentialRepository;
 
   @Transactional
   @Override
   public ApiResponseDto<ProjectResponseDto> create(ProjectRequestDto projectRequestDto) {
     try {
       log.debug("Creating new project with name: {}", projectRequestDto.name());
-      Project project = projectMapper.toEntity(projectRequestDto);
+
+      double laborCost = essentialRepository.findLaborCost();
+      double electricalCost = essentialRepository.findElectricityCost();
+
+      Project project = projectMapper.toEntity(projectRequestDto, laborCost, electricalCost);
 
       if (project.getProjectStep() == null || project.getProjectStep().isEmpty()) {
         project.setProjectStep(objectMapper.createArrayNode());
@@ -61,6 +67,7 @@ public class ProjectServiceImpl implements GenericService<ProjectResponseDto, Pr
               : project.getProjectStep());
 
       project = projectRepository.save(project);
+
       return ApiResponseDto.<ProjectResponseDto>builder()
           .status(HttpStatus.CREATED.value())
           .message("Project created successfully")
@@ -106,6 +113,7 @@ public class ProjectServiceImpl implements GenericService<ProjectResponseDto, Pr
   public ApiResponseDto<ProjectResponseDto> update(Long id, ProjectRequestDto projectRequestDto) {
     try {
       log.debug("Updating project with id: {} and name: {}", id, projectRequestDto.name());
+
       Project project = projectRepository.findById(id)
           .orElseThrow(() -> new ProjectNotFoundException(id));
 
